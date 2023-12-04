@@ -1,0 +1,107 @@
+\documentclass[12pt, a4paper, oneside]{article}
+\usepackage{amsmath, amsthm, amssymb, bm, graphicx, hyperref, mathrsfs, listings, xcolor}
+
+\title{{\Huge{\textbf{Notes on MIT Introduction to Deep Learning}}}}
+\author{Tianzong Cheng}
+\date{\today}
+\linespread{1.5}
+
+\definecolor{code_background_color}{rgb}{0.95,0.95,0.92}
+\lstset{language=Python, basicstyle=\ttfamily\small, backgroundcolor=\color{code_background_color}}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\newpage
+\thispagestyle{empty}
+\begin{center}
+    \Huge\textbf{Preface}
+\end{center}
+Thanks to Professor Ban for introducing this lecture to me.
+\begin{flushright}
+    \begin{tabular}{c}
+        Tianzong Cheng \\
+        \today
+    \end{tabular}
+\end{flushright}
+
+\newpage
+\pagenumbering{Roman}
+\setcounter{page}{1}
+\tableofcontents
+
+\newpage
+\setcounter{page}{1}
+\pagenumbering{arabic}
+
+\section{Lecture 1}
+
+\subsection{Perceptron}
+
+\begin{equation}
+    \hat{y}=g(w_{0}+\sum_{i=1}^{m}x_{i}w_{i})
+\end{equation}
+
+$x_{i}$ is the input, $w_{i}$ is the weight of each input, $w_{0}$ is the bias term, and $g$ is a non-linear activation funcion.
+
+Or we can rewrite the equation in linear algebra language.
+
+\begin{equation}
+    \hat{y} = g(w_{0}+X^{T}W)
+\end{equation}
+
+where: $X=\begin{bmatrix}
+        x_{1}  \\
+        \vdots \\
+        x_{m}
+    \end{bmatrix}$ and $W=\begin{bmatrix}
+        w_{1}  \\
+        \vdots \\
+        w_{m}
+    \end{bmatrix}$
+
+An example of the activation function: sigmoid function. It can be intepreted as a continous version of the threshold function.
+
+\begin{equation}
+    g(z)=\sigma(z)=\frac{1}{1+e^{-z}}
+\end{equation}
+
+In TensorFlow, we can access this function by:
+
+\begin{lstlisting}
+    tf.math.sigmoid(z)
+\end{lstlisting}
+
+\subsection{Building Neural Networks with Perceptrons}
+
+Perceptron: dot product, bias, non-linearity.
+
+Because all inputs are densly connected to all outputs, these layers are called \textbf{Dense} layers.
+
+The first layer, which is a hidden layer can be expressed as follows:
+
+\begin{equation}
+    z_{i}=w_{0,i}^{(1)}+\sum_{j=1}^{m}x_{j}w_{j,i}^{(1)}
+\end{equation}
+
+Then, the second layer, which calculates the final outputs, can be expressed as follows:
+
+\begin{equation}
+    \hat{y_{i}}=g(w_{0,i}^{(2)}+\sum_{j=1}^{m}g(z_{j})w_{j,i}^{(2)})
+\end{equation}
+
+We can express the whole model using two lines of codes with the help of TensorFlow:
+
+\begin{lstlisting}
+    import tensorflow as tf
+    model = tf.keras.Sequential([
+        tf.keras.layers.Dense(n),
+        tf.keras.layers.Dense(2)
+    ])
+\end{lstlisting}
+
+By stacking these layers on top of each other, we create a sequential model.
+
+\end{document}
