@@ -104,4 +104,46 @@ We can express the whole model using two lines of codes with the help of TensorF
 
 By stacking these layers on top of each other, we create a sequential model.
 
+\subsection{Loss Functions and Gradient Descent}
+
+The \textbf{empirical loss} measures the total loss over our entire dataset. Empirical loss is also known as objective function, cost function and emprical risk.
+
+\begin{equation}
+    J(\bm{W})=\frac{1}{n}\sum_{i=1}^{n}\mathcal{L}(f(x^{(i)};\bm{W}),y^{(i)})
+\end{equation}
+
+In this equation, $J$ is a function of the weights of the neuron network. We want to find the network weights that \textbf{achieve the lowest loss}. 
+
+First, we randomly pick an initial $(w_{0},w_{1})$. Then, by taking a small step in the opposite direction of gradient at this point, we can get closer to where the loss is the lowest. Repeat this step until convergence.
+
+\begin{lstlisting}
+    import tensorflow as tf
+    weights = tf.Variable([tf.random.normal()])
+    while True:
+        with tf.GradientTape() as g:
+            loss = compute_loss(weights)
+            gradient = g.gradient(loss, weights)
+        weights = weights - lr * gradient
+\end{lstlisting}
+
+\subsection{Backpropagation}
+
+\begin{equation}
+    \frac{\partial J(\bm{W})}{\partial w_{1}}=\frac{\partial J(\bm{W})}{\partial \hat{y}}\frac{\partial\hat{y}}{\partial z_{1}}\frac{\partial z_{1}}{\partial w_{1}}
+\end{equation}
+
+Repeat this for \textbf{every weight in the network} using gradients from later layers. We can see backpropagation is simply an instantiation of the chain rule.
+
+\subsection{Bathced Gradient Descent}
+
+Compute the gradient of a batch of (usually around a hundred) data points, rather than a single data point or all the data points. This is a fast and accurate way of estimating the gradient.
+
+\subsection{Regularization}
+
+The problem of overfitting describes that the model is too complex and does not generalize well.
+
+Regularization is a technique that constrains our optimization problem to discourage complex models. It helps improving generalization of our model on unseen data.
+
+The idea of \textbf{dropout} is randomly selecting some (typically half) activations to $0$. The idea of \textbf{early stopping} is to stop training before we have a chance to overfit.
+
 \end{document}
