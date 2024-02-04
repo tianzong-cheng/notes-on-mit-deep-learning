@@ -1,5 +1,5 @@
 \documentclass[12pt, a4paper, oneside]{article}
-\usepackage{amsmath, amsthm, amssymb, bm, graphicx, hyperref, mathrsfs, listings, xcolor}
+\usepackage{amsmath, amsthm, amssymb, bm, graphicx, hyperref, mathrsfs, listings, xcolor, indentfirst}
 
 \title{{\Huge{\textbf{Notes on MIT Introduction to Deep Learning}}}}
 \author{Tianzong Cheng}
@@ -19,7 +19,7 @@
 \begin{center}
     \Huge\textbf{Preface}
 \end{center}
-Thanks to Professor Ban for introducing this lecture to me.
+Many thanks to Professor Ban for introducing this lecture to me.
 \begin{flushright}
     \begin{tabular}{c}
         Tianzong Cheng \\
@@ -40,17 +40,17 @@ Thanks to Professor Ban for introducing this lecture to me.
 
 \subsection{Perceptron}
 
-\begin{equation}
+\begin{equation*}
     \hat{y}=g(w_{0}+\sum_{i=1}^{m}x_{i}w_{i})
-\end{equation}
+\end{equation*}
 
-$x_{i}$ is the input, $w_{i}$ is the weight of each input, $w_{0}$ is the bias term, and $g$ is a non-linear activation funcion.
+$x_{i}$ is the input, $w_{i}$ is the weight of each input, $w_{0}$ is the bias term, and $g$ is a non-linear activation function.
 
 Or we can rewrite the equation in linear algebra language.
 
-\begin{equation}
+\begin{equation*}
     \hat{y} = g(w_{0}+X^{T}W)
-\end{equation}
+\end{equation*}
 
 where: $X=\begin{bmatrix}
         x_{1}  \\
@@ -62,11 +62,11 @@ where: $X=\begin{bmatrix}
         w_{m}
     \end{bmatrix}$
 
-An example of the activation function: sigmoid function. It can be intepreted as a continous version of the threshold function.
+An example of the activation function: sigmoid function. It can be interpreted as a continuous version of the threshold function.
 
-\begin{equation}
+\begin{equation*}
     g(z)=\sigma(z)=\frac{1}{1+e^{-z}}
-\end{equation}
+\end{equation*}
 
 In TensorFlow, we can access this function by:
 
@@ -78,19 +78,19 @@ In TensorFlow, we can access this function by:
 
 Perceptron: dot product, bias, non-linearity.
 
-Because all inputs are densly connected to all outputs, these layers are called \textbf{Dense} layers.
+Because all inputs are densely connected to all outputs, these layers are called \textbf{Dense} layers.
 
 The first layer, which is a hidden layer can be expressed as follows:
 
-\begin{equation}
+\begin{equation*}
     z_{i}=w_{0,i}^{(1)}+\sum_{j=1}^{m}x_{j}w_{j,i}^{(1)}
-\end{equation}
+\end{equation*}
 
 Then, the second layer, which calculates the final outputs, can be expressed as follows:
 
-\begin{equation}
+\begin{equation*}
     \hat{y_{i}}=g(w_{0,i}^{(2)}+\sum_{j=1}^{m}g(z_{j})w_{j,i}^{(2)})
-\end{equation}
+\end{equation*}
 
 We can express the whole model using two lines of codes with the help of TensorFlow:
 
@@ -106,13 +106,15 @@ By stacking these layers on top of each other, we create a sequential model.
 
 \subsection{Loss Functions and Gradient Descent}
 
-The \textbf{empirical loss} measures the total loss over our entire dataset. Empirical loss is also known as objective function, cost function and emprical risk.
+The \textbf{empirical loss} measures the total loss over our entire dataset. Empirical loss is also known as objective function, cost function and empirical risk.
 
-\begin{equation}
+\begin{equation*}
     J(\bm{W})=\frac{1}{n}\sum_{i=1}^{n}\mathcal{L}(f(x^{(i)};\bm{W}),y^{(i)})
-\end{equation}
+\end{equation*}
 
-In this equation, $J$ is a function of the weights of the neuron network. We want to find the network weights that \textbf{achieve the lowest loss}. 
+In this equation, $J$ is a function of the weights of the neuron network. \textbf{Cross entropy loss} can be used with models that output a probability between $0$ and $1$. \textbf{Mean squared error loss} can be used with regression models that output continuous real numbers.
+
+Next, we want to find the network weights that \textbf{achieve the lowest loss}. 
 
 First, we randomly pick an initial $(w_{0},w_{1})$. Then, by taking a small step in the opposite direction of gradient at this point, we can get closer to where the loss is the lowest. Repeat this step until convergence.
 
@@ -128,13 +130,23 @@ First, we randomly pick an initial $(w_{0},w_{1})$. Then, by taking a small step
 
 \subsection{Backpropagation}
 
-\begin{equation}
+Backpropagation is the process of computing gradients with respect to the weights and biases. The process is given the name because gradients are calculated layer by layer, starting from the output layer.
+
+\begin{equation*}
     \frac{\partial J(\bm{W})}{\partial w_{1}}=\frac{\partial J(\bm{W})}{\partial \hat{y}}\frac{\partial\hat{y}}{\partial z_{1}}\frac{\partial z_{1}}{\partial w_{1}}
-\end{equation}
+\end{equation*}
 
 Repeat this for \textbf{every weight in the network} using gradients from later layers. We can see backpropagation is simply an instantiation of the chain rule.
 
-\subsection{Bathced Gradient Descent}
+\subsection{Optimization}
+
+\begin{equation*}
+    W\leftarrow W-\eta\frac{\partial J(\bm{W})}{\partial \bm{W}}
+\end{equation*}
+
+The equation shows how the weights are optimized through gradient descent. Note that $eta$ indicates the learning rate. A small learning rate converges slowly and gets stuck in false local minima while large learning rates overshoot, become unstable and diverge. So we need some kind of algorithms that adapts to the landscape.
+
+\subsection{Batched Gradient Descent}
 
 Compute the gradient of a batch of (usually around a hundred) data points, rather than a single data point or all the data points. This is a fast and accurate way of estimating the gradient.
 
@@ -142,8 +154,111 @@ Compute the gradient of a batch of (usually around a hundred) data points, rathe
 
 The problem of overfitting describes that the model is too complex and does not generalize well.
 
-Regularization is a technique that constrains our optimization problem to discourage complex models. It helps improving generalization of our model on unseen data.
+Regularization is a technique that constrains our optimization problem to discourage complex models. It helps to improve generalization of our model on unseen data.
 
-The idea of \textbf{dropout} is randomly selecting some (typically half) activations to $0$. The idea of \textbf{early stopping} is to stop training before we have a chance to overfit.
+The idea of \textbf{dropout} is randomly selecting some (typically half) activations to $0$.
+
+The idea of \textbf{early stopping} is to stop training before we have a chance to overfit. To be more specific, as the number of iterations increase, the loss of training dataset gets smaller. However, the loss of testing dataset gets smaller first and starts to increase again at certain point. The training process should stop before this happens.
+
+\section{Lecture 2}
+
+\subsection{Neurons with Recurrence}
+
+\begin{equation*}
+    \hat{y}_{t}=f(x_{t},h_{t-1})
+\end{equation*}
+
+The output is a function of the input and \textbf{a past memory}, represented by the symbol $h$. This is the intuitive foundation behind \textbf{Recurrent Neural Networks} (RNNs).
+
+\begin{equation*}
+    h_{t}=f_{W}(x_{t},h_{t-1})
+\end{equation*}
+
+The cell state is a function of the input and the old state. Note that the same function and set of parameters are used at every time step.
+
+\subsection{Encoding Language for a Neural Network}
+
+\begin{itemize}
+    \item Indexing: each word is given a number index
+    \item Embedding: Index to fixed-sized vector
+    \begin{itemize}
+        \item One-hot embedding: $[0,\cdots,0,1,0,\cdots,0]$
+        \item Learned embedding: Words that have close meanings are put near to each other
+    \end{itemize}
+\end{itemize}
+
+\subsection{Dealing with Gradient Issues}
+
+Computing the gradient with respect to $h_{0}$ involves many factors of $W_{hh}$ and repeated gradient computation. Consider the $W_{hh}$ matrix:
+
+\begin{itemize}
+    \item Many values $>1$: exploding gradients. Solution: Gradient clipping
+    \item Many values $<1$: vanishing gradients.
+\end{itemize}
+
+Solving the vanishing gradient problem:
+
+\begin{itemize}
+    \item Activation Functions: Using ReLU prevents $f'$ from shrinking the gradients when $x>0$ because the derivative of ReLU function is $1$.
+    \item Parameter Initialization: Initialize weights to identity matrix and initialize biases to zero.
+    \item Gated Cells, Long Short Term Memory (LSTMs): Use gates to selectively add or remove information within each recurrent unit. This is \textbf{the most robust method} to solve the vanishing gradient problem.
+\end{itemize}
+
+\subsection{Long Short Term Memory (LSTMs)}
+
+\begin{itemize}
+    \item Maintain a cell state
+    \item Use gates to control the flow of information
+    \begin{itemize}
+        \item \textbf{Forget} gate gets rid of irrelevant information
+        \item \textbf{Store} relevant information from current input
+        \item Selectively \textbf{update} cell state
+        \item \textbf{Output} gate returns a filtered version of the cell state
+    \end{itemize}
+    \item Backpropagation through time with partially uninterrupted gradient flow
+\end{itemize}
+
+There are three gates, which are all functions of the input and the last output, controlling the information flow.
+
+\begin{equation*}
+    \text{gate}=\text{sigmoid}(W[x_{t},h_{t-1}]+b)
+\end{equation*}
+
+\begin{itemize}
+    \item The old cell state goes through \textbf{the forget gate} to get rid of the irrelevant information.
+    \item The input goes through \textbf{the input gate}, getting rid of the irrelevant information, and is added upon the filtered old cell state to obtain the current cell state.
+    \item The current cell state goes through \textbf{the output gate} to get the output at current time.
+\end{itemize}
+
+\subsection{Limitations of RNNs}
+
+Limitations of RNNs:
+\begin{itemize}
+    \item Encoding bottleneck
+    \item Slow, no parallelization
+    \item Not long memory
+\end{itemize}
+
+Idea 1: Feed everything into dense network:
+\begin{itemize}
+    \item Not scalable
+    \item No order
+    \item No long memory
+\end{itemize}
+
+Idea 2: Identify and attend to what's important
+
+\subsection{Attention}
+
+\begin{itemize}
+    \item Encode position information
+    \item Extract \textbf{query}, \textbf{key}, \textbf{value} for search: we use neural network layers to extract \textbf{query}, \textbf{key}, \textbf{value}.
+    \item Compute attention weighting: $\text{softmax}(\frac{Q\cdot K^{T}}{\text{scaling}})$, the softmax function constrains the values to be between $0$ and $1$
+    \item Extract features with high attention
+\end{itemize}
+
+\begin{equation*}
+    A(Q,K,V)=\text{softmax}(\frac{Q\cdot K^{T}}{\text{scaling}})\cdot V
+\end{equation*}
 
 \end{document}
