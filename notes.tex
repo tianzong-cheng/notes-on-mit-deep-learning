@@ -261,4 +261,54 @@ Idea 2: Identify and attend to what's important
     A(Q,K,V)=\text{softmax}(\frac{Q\cdot K^{T}}{\text{scaling}})\cdot V
 \end{equation*}
 
+\section{Lecture 3}
+
+\subsection{Learning Visual Features}
+
+If we use a fully connected neural network to deal with images, there are two main problems. Firstly, since the image is flattened down into one dimension, all the spatial information is lost. Secondly, there are too many parameters.
+
+The idea of convolution:
+\begin{itemize}
+    \item Connect patch in input layer to a single neuron in subsequent layer.
+    \item Use a sliding window to define connections.
+\end{itemize}
+
+The convolution operation is element-wise multiplication between the input image and the filter and the result is a feature map.
+
+\subsection{Convolutional Neural Networks}
+
+\begin{itemize}
+    \item Convolution: Apply filters to generate feature maps.
+    \item Non-linearity: Often ReLU.
+    \item Pooling: Down-sampling operation on each feature map.
+\end{itemize}
+
+The idea of output volume introduces the dimension of depth, representing the number of filters. Thus, the network can learn a number of different features.
+
+\subsubsection{Non-linearity}
+
+ReLU function replaces all negative values with zero. The computational expense is really low while introducing non-linearity.
+
+\subsubsection{Pooling}
+
+Pooling is a way of down-sampling the feature map so that the CNN can deal with bigger images. Max pooling with $2\times 2$ filters and stride $2$ is taking the maximum value in each $2\times 2$ block thus reducing the scale by $2$ in each dimension. Note that the space information is preserved.
+
+\subsection{Applications}
+
+\subsubsection{Basic Architecture}
+
+Use CNNs to learn features in the input image first and then feed the result into downstream networks.
+
+\subsubsection{Classification}
+
+After the features are learned, the arrays are flattened and fed into a fully connected network. Remember to use the softmax function to normalize the result between $0$ and $1$, representing the probability.
+
+\subsubsection{Object Detection}
+
+Faster R-CNN learns region proposals. A region proposal network learns candidate regions and feed them into downstream networks.
+
+\subsubsection{Semantic Segmentation}
+
+Semantic segmentation is a fully convolutional network that classify every pixel of the input image. The network is designed with both down-sampling and up-sampling.
+
 \end{document}
