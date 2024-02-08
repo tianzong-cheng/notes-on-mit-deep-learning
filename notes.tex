@@ -36,7 +36,7 @@ Many thanks to Professor Ban for introducing this lecture to me.
 \setcounter{page}{1}
 \pagenumbering{arabic}
 
-\section{Lecture 1}
+\section{Intro to Deep Learning}
 
 \subsection{Perceptron}
 
@@ -68,12 +68,6 @@ An example of the activation function: sigmoid function. It can be interpreted a
     g(z)=\sigma(z)=\frac{1}{1+e^{-z}}
 \end{equation*}
 
-In TensorFlow, we can access this function by:
-
-\begin{lstlisting}
-    tf.math.sigmoid(z)
-\end{lstlisting}
-
 \subsection{Building Neural Networks with Perceptrons}
 
 Perceptron: dot product, bias, non-linearity.
@@ -92,16 +86,6 @@ Then, the second layer, which calculates the final outputs, can be expressed as 
     \hat{y_{i}}=g(w_{0,i}^{(2)}+\sum_{j=1}^{m}g(z_{j})w_{j,i}^{(2)})
 \end{equation*}
 
-We can express the whole model using two lines of codes with the help of TensorFlow:
-
-\begin{lstlisting}
-    import tensorflow as tf
-    model = tf.keras.Sequential([
-        tf.keras.layers.Dense(n),
-        tf.keras.layers.Dense(2)
-    ])
-\end{lstlisting}
-
 By stacking these layers on top of each other, we create a sequential model.
 
 \subsection{Loss Functions and Gradient Descent}
@@ -117,16 +101,6 @@ In this equation, $J$ is a function of the weights of the neuron network. \textb
 Next, we want to find the network weights that \textbf{achieve the lowest loss}. 
 
 First, we randomly pick an initial $(w_{0},w_{1})$. Then, by taking a small step in the opposite direction of gradient at this point, we can get closer to where the loss is the lowest. Repeat this step until convergence.
-
-\begin{lstlisting}
-    import tensorflow as tf
-    weights = tf.Variable([tf.random.normal()])
-    while True:
-        with tf.GradientTape() as g:
-            loss = compute_loss(weights)
-            gradient = g.gradient(loss, weights)
-        weights = weights - lr * gradient
-\end{lstlisting}
 
 \subsection{Backpropagation}
 
@@ -160,7 +134,7 @@ The idea of \textbf{dropout} is randomly selecting some (typically half) activat
 
 The idea of \textbf{early stopping} is to stop training before we have a chance to overfit. To be more specific, as the number of iterations increase, the loss of training dataset gets smaller. However, the loss of testing dataset gets smaller first and starts to increase again at certain point. The training process should stop before this happens.
 
-\section{Lecture 2}
+\section{Deep Sequence Modeling}
 
 \subsection{Neurons with Recurrence}
 
@@ -261,7 +235,7 @@ Idea 2: Identify and attend to what's important
     A(Q,K,V)=\text{softmax}(\frac{Q\cdot K^{T}}{\text{scaling}})\cdot V
 \end{equation*}
 
-\section{Lecture 3}
+\section{Deep Computer Vision}
 
 \subsection{Learning Visual Features}
 
@@ -270,7 +244,7 @@ If we use a fully connected neural network to deal with images, there are two ma
 The idea of convolution:
 \begin{itemize}
     \item Connect patch in input layer to a single neuron in subsequent layer.
-    \item Use a sliding window to define connections.
+    \item Use a \textbf{sliding window} to define connections.
 \end{itemize}
 
 The convolution operation is element-wise multiplication between the input image and the filter and the result is a feature map.
@@ -310,5 +284,81 @@ Faster R-CNN learns region proposals. A region proposal network learns candidate
 \subsubsection{Semantic Segmentation}
 
 Semantic segmentation is a fully convolutional network that classify every pixel of the input image. The network is designed with both down-sampling and up-sampling.
+
+\section{Deep Reinforcement Learning}
+
+There are three classes of learning problems:
+\begin{itemize}
+    \item Supervised Learning: learn a function to map $x\rightarrow y$
+    \item Unsupervised Learning: learn the underlying structure
+    \item Reinforcement Learning: maximize future rewards over many steps
+\end{itemize}
+
+\subsection{Key Concepts}
+
+\begin{itemize}
+    \item Agent: take actions
+    \item Environment: the world in which the agent exists and operates
+    \item Action space: the set of possible actions an agent can make in the Environment
+    \item Observations: of the environment after taking actions
+    \item State: a situation which the agent perceives
+    \item Reward: feedback that measures the success or failure of the agent's action
+    \item Total reward: $R_{t}=\sum_{i=t}^{\infty}r_{i}$
+    \item Discounted total reward: $R_{t}=\sum_{i=t}^{\infty}\gamma^{i}r_{i}$, where $\gamma$ is the discount factor, $0<\gamma <1$
+    \item \textbf{Q-function}: The Q-function captures the expected total future reward an agent in state, $s$, can receive by executing a certain action, $a$. $Q(s_{t},a_{t})=\mathbb{E}[R_{t}|s_{t},a_{t}]$
+    \item \textbf{Policy}: The policy function infers the best action to take at its state. The policy should choose an action that maximizes future reward. $\pi^{*}(s)=\text{argmax}Q(s,a)$
+\end{itemize}
+
+\subsection{Deep Reinforcement Learning Algorithms}
+
+\begin{itemize}
+    \item Value learning: Find $Q(s,a)$, $a=\text{argmax}Q(s,a)$
+    \item Policy learning: Find $\pi (s)$
+\end{itemize}
+
+\subsection{Deep Q Networks (DQN)}
+
+The Q-Loss function is:
+
+\begin{equation*}
+    \mathcal{L}=\mathbb{E}[||(r+\gamma\text{max}Q(s',a'))-Q(s,a)||^{2}]
+\end{equation*}
+
+Downsides of Q-learning
+
+\begin{itemize}
+    \item Complexity:
+    \begin{itemize}
+        \item Can model scenarios where the action space is discrete and small
+        \item Cannot handle continuous action spaces
+    \end{itemize}
+    \item Flexibility:
+    \begin{itemize}
+        \item Policy is deterministically computed from the Q function by maximizing the reward, thus it cannot learn stochastic policies.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Policy Learning}
+
+Function $P$ represents the probability of selecting the corresponding action will lead to the highest reward. Note that $\sum_{a_{i}\in A}^{}P(a_{i}|s)=1$, the sum of all values of is $1$.
+
+The $P$ function can be a continuous function, so it can deal with continuous action space, such as how fast should the agent move.
+
+Policy Gradients Training Algorithm
+\begin{lstlisting}
+    1. Initialize the agent
+    2. Run a policy until termination
+    3. Record all states, actions, rewards
+    4. Decrease probability of actions that resulted
+       in low rewards
+    5. Increase probability of actions that resulted
+       in high rewards
+\end{lstlisting}
+
+The loss function is defined as the negative multiplication of log-likelihood of action and the reward.
+
+\begin{equation*}
+    \text{loss}=-\log P(a_{t}|s_{t}R_{t})
+\end{equation*}
 
 \end{document}
